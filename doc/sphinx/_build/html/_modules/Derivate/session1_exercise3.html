@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Derivate.session1_exercise3 &#8212; Derivate 0.1 [3 - Alpha] documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Derivate.session1_exercise3</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Derivate</span>
+<span class="c1"># --------</span>
+<span class="c1"># Derivative Finanzinstrumente (created by auxilium)</span>
+<span class="c1">#</span>
+<span class="c1"># Author:   Jan-Philipp Hoffmann</span>
+<span class="c1"># Version:  0.1, copyright Tuesday, 16 November 2021</span>
+<span class="c1"># Website:  https://www.h-da.de</span>
+<span class="c1"># License:  Apache License 2.0 (see LICENSE file)</span>
+
+
+<span class="kn">from</span> <span class="nn">dcf</span> <span class="kn">import</span> <span class="n">CashFlowLegList</span> <span class="k">as</span> <span class="n">_CashFlowLegList</span><span class="p">,</span> \
+    <span class="n">FixedCashFlowList</span> <span class="k">as</span> <span class="n">_FixedCashFlowList</span><span class="p">,</span> \
+    <span class="n">RateCashFlowList</span> <span class="k">as</span> <span class="n">_RateCashFlowList</span>
+
+
+<div class="viewcode-block" id="BondCashFlowLegList"><a class="viewcode-back" href="../../api/Derivate.html#Derivate.session1_exercise3.BondCashFlowLegList">[docs]</a><span class="k">class</span> <span class="nc">BondCashFlowLegList</span><span class="p">(</span><span class="n">_CashFlowLegList</span><span class="p">):</span>
+    <span class="c1"># tested by `test_bond()` in `unittests.py`</span>
+
+<div class="viewcode-block" id="BondCashFlowLegList.__init__"><a class="viewcode-back" href="../../api/Derivate.html#Derivate.session1_exercise3.BondCashFlowLegList.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payment_date_list</span><span class="p">,</span> <span class="n">notional_amount</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fixed_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">forward_curve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Simple fixed rate bond</span>
+
+<span class="sd">            :param payment_date_list: list of payment dates,</span>
+<span class="sd">                last date in list sets the bond maturity</span>
+<span class="sd">            :param notional_amount: bond notional amount</span>
+<span class="sd">            :param fixed_rate: fixed interest rate</span>
+<span class="sd">            :param forward_curve: InterestRateCurve</span>
+<span class="sd">            :param day_count: day count convention function</span>
+<span class="sd">                to calculate year fractions between two dates</span>
+<span class="sd">            :param start_date: issue date of the bond</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># not very reasonable</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">payment_date_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">payment_date_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">notional_payment_date_list</span> <span class="o">=</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span>
+        <span class="n">notional_amount_list</span> <span class="o">=</span> <span class="o">-</span><span class="n">notional_amount</span><span class="p">,</span> <span class="n">notional_amount</span>
+        <span class="n">notional_leg</span> <span class="o">=</span> <span class="n">_FixedCashFlowList</span><span class="p">(</span>
+            <span class="n">payment_date_list</span><span class="o">=</span><span class="n">notional_payment_date_list</span><span class="p">,</span>
+            <span class="n">amount_list</span><span class="o">=</span><span class="n">notional_amount_list</span><span class="p">,</span>
+            <span class="n">origin</span><span class="o">=</span><span class="n">start_date</span>
+        <span class="p">)</span>
+        <span class="n">coupon_leg</span> <span class="o">=</span> <span class="n">_RateCashFlowList</span><span class="p">(</span>
+            <span class="n">payment_date_list</span><span class="o">=</span><span class="n">payment_date_list</span><span class="p">,</span>
+            <span class="n">amount_list</span><span class="o">=</span><span class="p">[</span><span class="n">notional_amount</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">payment_date_list</span><span class="p">),</span>
+            <span class="n">fixed_rate</span><span class="o">=</span><span class="n">fixed_rate</span><span class="p">,</span>
+            <span class="n">forward_curve</span><span class="o">=</span><span class="n">forward_curve</span><span class="p">,</span>
+            <span class="n">day_count</span><span class="o">=</span><span class="n">day_count</span><span class="p">,</span>
+            <span class="n">origin</span><span class="o">=</span><span class="n">start_date</span>
+        <span class="p">)</span>
+        <span class="n">legs</span> <span class="o">=</span> <span class="n">notional_leg</span><span class="p">,</span> <span class="n">coupon_leg</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">legs</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Derivate</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../doc.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases.html">Releases</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../Derivate.html">Derivate</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Jan-Philipp Hoffmann.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
